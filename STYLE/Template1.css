@@ -1,0 +1,246 @@
+:root {
+  --primary-dark: #081c15;
+  --accent-green: #2d6a4f;
+  --harvest-gold: #ffb703;
+  --soft-white: #f8f9fa;
+  --glass-bg: rgba(8, 28, 21, 0.92);
+  --shadow--primume: 0 15px 35px rgba(0, 0, 0, 0.2);
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-brand: 'Playfair Display', serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--soft-white);
+  color: var(--primary-dark);
+}
+
+.top-utility-bar {
+  background: var(--primary-dark);
+  color: white;
+  padding: 10px 8%;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.top-utility-bar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-pill {
+  background: #d00000;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  margin-right: 12px;
+  animation: pulseGlow 2s infinite;
+}
+
+.top-socials .fb-icon {
+  color: var(--harvest-gold);
+  text-decoration: none;
+  font-weight: 700;
+  transition: 0.3s ease;
+}
+
+.top-socials .fb-icon:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+.main-navigation {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 20px 8%;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon-box {
+  background: var(--harvest-gold);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 14px;
+  font-size: 26px;
+  color: var(--primary-dark);
+  box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+}
+
+.text-box .main-title {
+  display: block;
+  font-family: var(--font-brand);
+  color: white;
+  font-size: 26px;
+  letter-spacing: 1px;
+}
+
+.text-box .main-title strong {
+  color: var(--harvest-gold);
+}
+
+.text-box .sub-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #999;
+  font-weight: 700;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 40px;
+  align-items: center;
+}
+
+.menu-item .link {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  transition: 0.3s;
+  position: relative;
+}
+
+.menu-item .link:hover,
+.menu-item .link.active {
+  color: var(--harvest-gold);
+}
+
+.menu-item .link::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -8px;
+  left: 0;
+  background: var(--harvest-gold);
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.menu-item .link:hover::after,
+.menu-item .link.active::after {
+  width: 100%;
+}
+
+.has-dropdown {
+  position: relative;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 40px;
+  left: -20px;
+  min-width: 280px;
+
+  background: rgba(8, 28, 21, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 12px;
+  border: 1px solid rgba(255, 183, 3, 0.2);
+  border-top: 4px solid var(--harvest-gold);
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  padding: 15px 0;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  z-index: 1000;
+}
+
+.has-dropdown:hover .dropdown-list {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdown-list li a {
+  padding: 12px 25px;
+  display: block;
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 700;
+  transition: 0.3s;
+  border-left: 4px solid transparent;
+}
+
+.dropdown-list li a small {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+  font-size: 11px;
+  margin-top: 2px;
+  transition: 0.3s;
+}
+
+.dropdown-list li a:hover {
+  background: rgba(255, 183, 3, 0.1);
+  padding-left: 35px;
+  border-left: 4px solid var(--harvest-gold);
+}
+
+.dropdown-list li a:hover small {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cta-button {
+  background: var(--accent-green);
+  padding: 12px 24px !important;
+  border-radius: 50px;
+  color: white !important;
+  transition: 0.3s !important;
+}
+
+.cta-button:hover {
+  background: var(--harvest-gold) !important;
+  color: var(--primary-dark) !important;
+  box-shadow: 0 0 20px rgba(255, 183, 3, 0.4);
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+

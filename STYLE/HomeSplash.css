@@ -1,0 +1,199 @@
+@font-face {
+  font-family: 'SplashTitle';
+  src: url('../FONTS/cinzel/CinzelDecorative-Bold.otf') format('opentype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SplashBody';
+  src: url('../FONTS/exclusive_editorial/DR Exclusive Editorial.ttf')
+    format('truetype');
+  font-display: swap;
+}
+
+.home-wawawa {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  display: grid;
+  place-items: center;
+  background: #000;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translate3d(0, 0, 0);
+  will-change: opacity;
+  animation: homeSplashFadeOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) 3.2s forwards;
+}
+
+.home-wawawa__video-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: #000;
+  width: 100vw;
+  height: 100vh;
+}
+
+.home-wawawa__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.4) contrast(1.1);
+  /* Fix for black flickering: ensuring visibility and hardware acceleration */
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.home-wawawa__content {
+  position: relative;
+  z-index: 1000;
+  text-align: center;
+  color: #ffffff;
+  width: 100%;
+  max-width: 850px;
+  transform: translate3d(0, 0, 0);
+}
+
+.home-wawawa__eyebrow {
+  margin: 0 0 12px;
+  font-family: 'SplashBody', serif;
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #ffb703;
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  animation: splashRise 0.4s ease-out 0.1s forwards;
+}
+
+.home-wawawa__word {
+  display: block;
+  font-family: 'SplashTitle', serif;
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(to bottom, #fff 40%, #ffb703 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0;
+  transform: translate3d(0, 15px, 0);
+}
+
+.home-wawawa__word--1 {
+  animation: splashRise 0.5s cubic-bezier(0.2, 1, 0.3, 1) 0.3s forwards;
+}
+
+.home-wawawa__word--2 {
+  margin-top: 5px;
+  animation: splashRise 0.5s cubic-bezier(0.2, 1, 0.3, 1) 0.4s forwards;
+}
+
+.home-wawawa__line {
+  width: 100px;
+  height: 2px;
+  margin: 15px auto;
+  background: #ffb703;
+  transform: scaleX(0);
+  opacity: 0;
+  animation: splashLineIn 0.5s ease-out 0.6s forwards;
+}
+
+.home-wawawa__tagline {
+  font-family: 'SplashBody', serif;
+  font-size: clamp(0.9rem, 1.4vw, 1.2rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  animation: splashRise 0.4s ease-out 0.8s forwards;
+}
+
+.home-wawawa__about {
+  margin: 15px auto 0;
+  max-width: 600px;
+  font-family: 'SplashBody', serif;
+  font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  animation: splashRise 0.5s ease-out 1s forwards;
+}
+
+.home-wawawa__provinces {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-wawawa__provinces span {
+  padding: 5px 14px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+  font-family: 'SplashBody', serif;
+  font-size: 0.7rem;
+  color: #fff;
+  opacity: 0;
+  transform: translate3d(0, 5px, 0);
+  animation: splashRise 0.3s ease-out forwards;
+}
+
+.home-wawawa__provinces span:nth-child(1) {
+  animation-delay: 1.2s;
+}
+.home-wawawa__provinces span:nth-child(2) {
+  animation-delay: 1.3s;
+}
+.home-wawawa__provinces span:nth-child(3) {
+  animation-delay: 1.4s;
+}
+.home-wawawa__provinces span:nth-child(4) {
+  animation-delay: 1.5s;
+}
+.home-wawawa__provinces span:nth-child(5) {
+  animation-delay: 1.6s;
+}
+.home-wawawa__provinces span:nth-child(6) {
+  animation-delay: 1.7s;
+}
+.home-wawawa__provinces span:nth-child(7) {
+  animation-delay: 1.8s;
+}
+
+@keyframes splashRise {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes splashLineIn {
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes homeSplashFadeOut {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+  99% {
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+}
