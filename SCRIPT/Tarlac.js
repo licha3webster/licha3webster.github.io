@@ -5,9 +5,9 @@ const CuisineEngine = {
       name: 'Iniruban',
       origin: 'Camiling, Tarlac',
       description:
-        'A centerpiece of Tarlac’s heritage, this "pounded green rice" is harvested early and toasted, offering a smoky, chewy delicacy unique to the region.',
+        'A centerpiece of Tarlacâ€™s heritage, this "pounded green rice" is harvested early and toasted, offering a smoky, chewy delicacy unique to the region.',
       image: '../Tarlac-image/Foods-1.jpg',
-      video: '../Vedio/Tarlac/Card-3.mp4',
+      video: '../Vedio/Tarlac/Card-1.mp4',
       sourceVideo: 'https://www.youtube.com/embed/NddSURdVOX4?si=o_h50z7RA-jS-066',
       prep: '1 Hr',
       cook: '1 Hr',
@@ -33,7 +33,7 @@ const CuisineEngine = {
       description:
         'Famous for its "bagnet-style" preparation, this chicharon is known for a heavy meat-to-fat ratio and a skin that stays crunchy for days.',
       image: '../Tarlac-image/foods-2.jpg',
-      video: '../Vedio/Tarlac/Card-3.mp4',
+      video: '../Vedio/Tarlac/Card-2.mp4',
       sourceVideo: 'https://www.youtube.com/embed/qRwfXynYrgY?si=vUqXhaAjXX_qTfTA',
       prep: '1 Hr',
       cook: '3 Hrs',
@@ -85,7 +85,7 @@ const CuisineEngine = {
       description:
         'A savory stir-fry adaptation featuring flash-fried thin beef slices served with a mountain of fresh white onions and crunchy cabbage.',
       image: '../Tarlac-image/foods-4.jpg',
-      video: '../Vedio/Tarlac/Card-5.mp4',
+      video: '../Vedio/Tarlac/Card-4.mp4',
       sourceVideo: 'https://www.youtube.com/embed/Dbez1gr7bZk?si=njNd0CdhJ-EdUcDw',
       prep: '15 Mins',
       cook: '30 Mins',
@@ -101,7 +101,7 @@ const CuisineEngine = {
         'Quickly deep-fry the beef slices in hot oil until they are browned and slightly crisp on the edges.',
         'Add the liver during the last 2 minutes of frying to keep it tender.',
         'Remove excess oil and toss in the onions and cabbage.',
-        'Sauté for just 1-2 minutes—the vegetables should remain crisp.',
+        'SautÃ© for just 1-2 minutesâ€”the vegetables should remain crisp.',
         'Season generously with salt and pepper and serve with a soy-calamansi dip.',
       ],
     },
@@ -111,7 +111,7 @@ const CuisineEngine = {
       origin: 'Victoria, Tarlac',
       description:
         'A sticky rice cake tradition from Victoria, recognized for its smooth, elastic texture and rich coconut curd topping.',
-      image: '../Tarlac-image/food-5.jpg',
+      image: '../Tarlac-image/food-5.jpg.jpg',
       video: '../Vedio/Tarlac/Card-5.mp4',
       sourceVideo: 'https://www.youtube.com/embed/7AgCj2VgvQ4?si=5fW_hHja5gIJDo66',
       prep: '20 Mins',
@@ -136,9 +136,9 @@ const CuisineEngine = {
       name: 'Bagnet ni Abel',
       origin: 'Tarlac (Ilocano Influence)',
       description:
-        'Tarlac’s version of the deep-fried pork classic, representing the Ilocano migrants who helped shape the province’s diverse landscape.',
+        'Tarlacâ€™s version of the deep-fried pork classic, representing the Ilocano migrants who helped shape the provinceâ€™s diverse landscape.',
       image: '../Tarlac-image/foods-6.jpg',
-      video: '../Vedio/Tarlac/Card-5.mp4',
+      video: '../Vedio/Tarlac/Card-6.mp4',
       sourceVideo: 'https://www.youtube.com/embed/X0WdCfuUURI?si=EXes0vHv_-Lx0Y-c',
       prep: '30 Mins',
       cook: '3 Hrs',
@@ -161,10 +161,265 @@ const CuisineEngine = {
   ],
 
   currentMediaIndex: 0,
+  currentWatchUrl: '',
+  currentEmbedUrl: '',
 
   init() {
     this.bindEvents();
     this.renderVideoSourceLinks();
+  },
+
+  toWatchUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId) return `https://www.youtube.com/watch?v=${shortId}`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (embedId) return `https://www.youtube.com/watch?v=${embedId}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (watchId) return `https://www.youtube.com/watch?v=${watchId}`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const listType = parsedUrl.searchParams.get('listType');
+          const listValue = parsedUrl.searchParams.get('list');
+          if (listType === 'search' && listValue) {
+            return `https://www.youtube.com/results?search_query=${encodeURIComponent(listValue)}`;
+          }
+        }
+      }
+
+      return sourceVideo;
+    } catch (error) {
+      return sourceVideo;
+    }
+  },
+
+  toEmbedUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId)
+          return `https://www.youtube.com/embed/${shortId}?autoplay=1&rel=0`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (!embedId) return '';
+
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed/${embedId}?${params.toString()}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (!watchId) return '';
+          return `https://www.youtube.com/embed/${watchId}?autoplay=1&rel=0`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed?${params.toString()}`;
+        }
+      }
+
+      return '';
+    } catch (error) {
+      return '';
+    }
+  },
+
+  ensureModalVideoFallbackElement() {
+    let fallbackElement = document.getElementById('modalVideoFallback');
+    if (fallbackElement) return fallbackElement;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    const container = trigger ? trigger.parentElement : null;
+    if (!container) return null;
+
+    fallbackElement = document.createElement('p');
+    fallbackElement.id = 'modalVideoFallback';
+    fallbackElement.className = 'modal-video-fallback';
+    fallbackElement.style.display = 'none';
+    fallbackElement.style.marginTop = '0.75rem';
+    fallbackElement.style.textAlign = 'center';
+    fallbackElement.style.fontSize = '0.9rem';
+    fallbackElement.style.fontWeight = '600';
+    fallbackElement.style.color = '#ffffff';
+    fallbackElement.style.padding = '0 0.5rem';
+
+    container.appendChild(fallbackElement);
+    return fallbackElement;
+  },
+
+  ensureYoutubeFallbackFrame() {
+    let youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    if (youtubeFrame) return youtubeFrame;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    if (!trigger) return null;
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'modalVideoYoutubeWrapper';
+    wrapper.style.display = 'none';
+    wrapper.style.width = '100%';
+    wrapper.style.height = '100%';
+    wrapper.style.position = 'absolute';
+    wrapper.style.inset = '0';
+    wrapper.style.borderRadius = '12px';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.backgroundColor = '#000';
+    wrapper.style.zIndex = '3';
+
+    youtubeFrame = document.createElement('iframe');
+    youtubeFrame.id = 'modalVideoYoutubeFrame';
+    youtubeFrame.title = 'YouTube backup video';
+    youtubeFrame.style.width = '100%';
+    youtubeFrame.style.height = '100%';
+    youtubeFrame.style.border = '0';
+    youtubeFrame.allow =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    youtubeFrame.allowFullscreen = true;
+    youtubeFrame.referrerPolicy = 'strict-origin-when-cross-origin';
+
+    wrapper.appendChild(youtubeFrame);
+    trigger.appendChild(wrapper);
+
+    return youtubeFrame;
+  },
+
+  hideYoutubeVideoFallback() {
+    const youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (youtubeFrame) youtubeFrame.src = '';
+    if (youtubeWrapper) youtubeWrapper.style.display = 'none';
+    if (modalVideo) modalVideo.style.display = '';
+    if (overlayPlay) overlayPlay.style.display = '';
+  },
+
+  hideModalVideoFallback() {
+    const fallbackElement = document.getElementById('modalVideoFallback');
+    this.hideYoutubeVideoFallback();
+
+    if (!fallbackElement) return;
+    fallbackElement.style.display = 'none';
+    fallbackElement.textContent = '';
+  },
+
+  showYoutubeVideoFallback() {
+    if (!this.currentEmbedUrl) return false;
+
+    const youtubeFrame = this.ensureYoutubeFallbackFrame();
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (!youtubeFrame || !youtubeWrapper || !modalVideo) return false;
+
+    youtubeFrame.src = this.currentEmbedUrl;
+    youtubeWrapper.style.display = 'block';
+    modalVideo.style.display = 'none';
+    if (overlayPlay) overlayPlay.style.display = 'none';
+
+    return true;
+  },
+
+  showModalVideoFallback() {
+    const usedYoutubeBackup = this.showYoutubeVideoFallback();
+    const fallbackElement = this.ensureModalVideoFallbackElement();
+    if (!fallbackElement) return;
+
+    if (usedYoutubeBackup) {
+      fallbackElement.style.display = 'none';
+      return;
+    }
+
+    fallbackElement.textContent = 'Video file unavailable. ';
+
+    if (this.currentWatchUrl) {
+      const watchLink = document.createElement('a');
+      watchLink.href = this.currentWatchUrl;
+      watchLink.target = '_blank';
+      watchLink.rel = 'noopener noreferrer';
+      watchLink.textContent = 'Watch the video here';
+      watchLink.style.color = '#ffe08a';
+      watchLink.style.fontWeight = '700';
+      fallbackElement.appendChild(watchLink);
+    }
+
+    fallbackElement.style.display = 'block';
+  },
+
+  configureModalVideoFallback(food) {
+    this.currentWatchUrl = this.toWatchUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+    this.currentEmbedUrl = this.toEmbedUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+
+    this.hideModalVideoFallback();
+
+    const modalVideo = document.getElementById('modalVideo');
+    const modalSource = modalVideo ? modalVideo.querySelector('source') : null;
+    if (modalVideo) {
+      modalVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+      modalVideo.onloadeddata = () => {
+        this.hideModalVideoFallback();
+      };
+    }
+
+    if (modalSource) {
+      modalSource.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    const fullscreenVideo = document.getElementById('fullscreenVideoPlayer');
+    if (fullscreenVideo) {
+      fullscreenVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    if (!(food && food.video) && (this.currentWatchUrl || this.currentEmbedUrl)) {
+      this.showModalVideoFallback();
+    }
   },
 
   renderVideoSourceLinks() {
@@ -173,12 +428,23 @@ const CuisineEngine = {
       const food = this.data.find((entry) => entry.id === id);
       if (!food || !food.sourceVideo) return;
 
+      const watchUrl = this.toWatchUrl(food.sourceVideo);
+      if (!watchUrl) return;
+
       const info = card.querySelector('.food-card-info');
       if (!info || info.querySelector('.food-video-credit')) return;
 
       const credit = document.createElement('p');
       credit.className = 'food-video-credit';
-      credit.innerHTML = `Video source: <a href="${food.sourceVideo}" target="_blank" rel="noopener noreferrer">${food.sourceVideo}</a>`;
+      credit.textContent = 'Video source: ';
+
+      const sourceLink = document.createElement('a');
+      sourceLink.href = watchUrl;
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'Watch video';
+
+      credit.appendChild(sourceLink);
       credit.addEventListener('click', (event) => {
         event.stopPropagation();
       });
@@ -262,6 +528,7 @@ const CuisineEngine = {
   openModal(id) {
     const food = this.data.find((f) => f.id === id);
     if (!food) return;
+    this.configureModalVideoFallback(food);
 
     this.currentMediaIndex = 0;
     const track = document.getElementById('mediaTrack');
@@ -277,8 +544,16 @@ const CuisineEngine = {
     document.getElementById('modalImage').src = food.image;
 
     const videoElement = document.getElementById('modalVideo');
-    videoElement.querySelector('source').src = food.video;
-    videoElement.load();
+    if (videoElement) {
+      const sourceElement = videoElement.querySelector('source');
+      if (sourceElement) {
+        sourceElement.src = food.video || '';
+      } else {
+        videoElement.src = food.video || '';
+      }
+      videoElement.load();
+      if (!food.video) this.showModalVideoFallback();
+    }
 
     document.getElementById('modalTitle').innerText = food.name;
     document.getElementById('modalOrigin').innerText = food.origin;
@@ -312,6 +587,7 @@ const CuisineEngine = {
 
   closeModal() {
     const overlay = document.getElementById('modalOverlay');
+    this.hideModalVideoFallback();
     const video = document.getElementById('modalVideo');
     const fsVideo = document.getElementById('fullscreenVideoPlayer');
 
@@ -391,7 +667,7 @@ const TouristSpots = {
       location: 'Mayantoc, Tarlac',
       description:
         'Hidden within the "Summer Capital of Tarlac," the Anzap Twin Falls offers a refreshing escape for trekkers. The falls drop from a massive rock wall into a cool, natural pool surrounded by the pristine forests of Mayantoc.',
-      image: '../Tarlac-image/places-5.webp',
+      image: '../Tarlac-image/places-5',
       time: '6:00 AM - 4:00 PM',
       highlights:
         'Twin Waterfalls, Nature Trekking, Natural Swimming Pool, Eco-Tourism',

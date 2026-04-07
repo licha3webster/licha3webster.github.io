@@ -18,7 +18,7 @@ This project is now set up for GitHub Pages hosting.
 6. Wait for deployment, then open your site URL from the Pages section.
 
 ## Notes
-- Keep the folder structure exactly as-is (`HTML`, `STYLE`, `SCRIPT`, images, videos).
+- Keep the folder structure exactly as-is (`HTML`, `STYLE`, `SCRIPT`, and image folders).
 - `Credentials.html` is linked in the footer on all major pages.
 - `.nojekyll` is included to avoid Jekyll processing issues.
 - `.gitignore` ignores large backup ZIP files and editor temp files.

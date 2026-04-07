@@ -5,7 +5,7 @@ const CuisineEngine = {
       name: 'Sizzling Sisig',
       origin: 'Angeles City, Pampanga',
       description:
-        'The original pork sisig made from chopped pig’s face and ears, seasoned with calamansi, onions, and chili peppers, served on a sizzling plate.',
+        'The original pork sisig made from chopped pigâ€™s face and ears, seasoned with calamansi, onions, and chili peppers, served on a sizzling plate.',
       image: '../Pangpanga-Image/Foods-1.jpg',
       video: '../Vedio/Pangpanga/Card-1.mp4',
       sourceVideo: 'https://www.youtube.com/embed/Sbgs4uFafuk',
@@ -25,7 +25,7 @@ const CuisineEngine = {
         'Boil the pig face in water with salt and pepper until tender. Drain and let it cool.',
         'Grill the boiled meat until slightly charred and crispy.',
         'Finely chop the grilled meat into small bits.',
-        'Sauté the meat in a pan (or sizzling plate) with onions and chilies.',
+        'SautÃ© the meat in a pan (or sizzling plate) with onions and chilies.',
         'Season with soy sauce, calamansi juice, salt, and pepper. Serve while sizzling.',
       ],
     },
@@ -54,7 +54,7 @@ const CuisineEngine = {
         'Add the ground peanuts and toasted ground rice to the broth, stirring until thickened.',
         'Pour in annatto water until the desired orange color is achieved.',
         'Add the vegetables and simmer until cooked through.',
-        'Serve hot with a side of sautéed bagoong alamang.',
+        'Serve hot with a side of sautÃ©ed bagoong alamang.',
       ],
     },
     {
@@ -64,7 +64,7 @@ const CuisineEngine = {
       description:
         'Naturally fermented sweet-savory cured pork. Known as "Puso" in Pampanga, it is tender, reddish, and a staple breakfast favorite.',
       image: '../Pangpanga-Image/Foods-3.webp',
-      video: '../Vedio/Pangpanga/Card-4.mp4',
+      video: '../Vedio/Pangpanga/Card-3.mp4',
       sourceVideo: 'https://www.youtube.com/embed/FiZ3WVbsPc0',
       prep: '1 Hr (Curing takes 3 days)',
       cook: '20 Mins',
@@ -105,7 +105,7 @@ const CuisineEngine = {
         'Banana leaves (for lining the pan)',
       ],
       steps: [
-        'Sauté garlic, onions, and chicken until browned.',
+        'SautÃ© garlic, onions, and chicken until browned.',
         'Add the glutinous rice and turmeric, stirring to coat the grains.',
         'Pour in coconut milk and bring to a simmer over low heat.',
         'Cover with banana leaves and cook until the rice is tender and a crust (tutong) forms.',
@@ -136,12 +136,12 @@ const CuisineEngine = {
         'Gradually fold in the arrowroot flour until a dough forms.',
         'Press a small piece of dough into the traditional wooden San Nicolas mold.',
         'Carefully remove the molded dough and place on a baking sheet.',
-        'Bake at 175°C for 12–15 minutes until light golden brown.',
+        'Bake at 175Â°C for 12â€“15 minutes until light golden brown.',
       ],
     },
     {
       id: 6,
-      name: 'Razon’s Style Halo-Halo',
+      name: 'Razonâ€™s Style Halo-Halo',
       origin: 'Guagua, Pampanga',
       description:
         'A minimalist, creamy version of the classic dessert, famous for its ultra-fine shaved ice, macapuno, and sun-ripened bananas.',
@@ -169,10 +169,265 @@ const CuisineEngine = {
   ],
 
   currentMediaIndex: 0,
+  currentWatchUrl: '',
+  currentEmbedUrl: '',
 
   init() {
     this.bindEvents();
     this.renderVideoSourceLinks();
+  },
+
+  toWatchUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId) return `https://www.youtube.com/watch?v=${shortId}`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (embedId) return `https://www.youtube.com/watch?v=${embedId}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (watchId) return `https://www.youtube.com/watch?v=${watchId}`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const listType = parsedUrl.searchParams.get('listType');
+          const listValue = parsedUrl.searchParams.get('list');
+          if (listType === 'search' && listValue) {
+            return `https://www.youtube.com/results?search_query=${encodeURIComponent(listValue)}`;
+          }
+        }
+      }
+
+      return sourceVideo;
+    } catch (error) {
+      return sourceVideo;
+    }
+  },
+
+  toEmbedUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId)
+          return `https://www.youtube.com/embed/${shortId}?autoplay=1&rel=0`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (!embedId) return '';
+
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed/${embedId}?${params.toString()}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (!watchId) return '';
+          return `https://www.youtube.com/embed/${watchId}?autoplay=1&rel=0`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed?${params.toString()}`;
+        }
+      }
+
+      return '';
+    } catch (error) {
+      return '';
+    }
+  },
+
+  ensureModalVideoFallbackElement() {
+    let fallbackElement = document.getElementById('modalVideoFallback');
+    if (fallbackElement) return fallbackElement;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    const container = trigger ? trigger.parentElement : null;
+    if (!container) return null;
+
+    fallbackElement = document.createElement('p');
+    fallbackElement.id = 'modalVideoFallback';
+    fallbackElement.className = 'modal-video-fallback';
+    fallbackElement.style.display = 'none';
+    fallbackElement.style.marginTop = '0.75rem';
+    fallbackElement.style.textAlign = 'center';
+    fallbackElement.style.fontSize = '0.9rem';
+    fallbackElement.style.fontWeight = '600';
+    fallbackElement.style.color = '#ffffff';
+    fallbackElement.style.padding = '0 0.5rem';
+
+    container.appendChild(fallbackElement);
+    return fallbackElement;
+  },
+
+  ensureYoutubeFallbackFrame() {
+    let youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    if (youtubeFrame) return youtubeFrame;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    if (!trigger) return null;
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'modalVideoYoutubeWrapper';
+    wrapper.style.display = 'none';
+    wrapper.style.width = '100%';
+    wrapper.style.height = '100%';
+    wrapper.style.position = 'absolute';
+    wrapper.style.inset = '0';
+    wrapper.style.borderRadius = '12px';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.backgroundColor = '#000';
+    wrapper.style.zIndex = '3';
+
+    youtubeFrame = document.createElement('iframe');
+    youtubeFrame.id = 'modalVideoYoutubeFrame';
+    youtubeFrame.title = 'YouTube backup video';
+    youtubeFrame.style.width = '100%';
+    youtubeFrame.style.height = '100%';
+    youtubeFrame.style.border = '0';
+    youtubeFrame.allow =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    youtubeFrame.allowFullscreen = true;
+    youtubeFrame.referrerPolicy = 'strict-origin-when-cross-origin';
+
+    wrapper.appendChild(youtubeFrame);
+    trigger.appendChild(wrapper);
+
+    return youtubeFrame;
+  },
+
+  hideYoutubeVideoFallback() {
+    const youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (youtubeFrame) youtubeFrame.src = '';
+    if (youtubeWrapper) youtubeWrapper.style.display = 'none';
+    if (modalVideo) modalVideo.style.display = '';
+    if (overlayPlay) overlayPlay.style.display = '';
+  },
+
+  hideModalVideoFallback() {
+    const fallbackElement = document.getElementById('modalVideoFallback');
+    this.hideYoutubeVideoFallback();
+
+    if (!fallbackElement) return;
+    fallbackElement.style.display = 'none';
+    fallbackElement.textContent = '';
+  },
+
+  showYoutubeVideoFallback() {
+    if (!this.currentEmbedUrl) return false;
+
+    const youtubeFrame = this.ensureYoutubeFallbackFrame();
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (!youtubeFrame || !youtubeWrapper || !modalVideo) return false;
+
+    youtubeFrame.src = this.currentEmbedUrl;
+    youtubeWrapper.style.display = 'block';
+    modalVideo.style.display = 'none';
+    if (overlayPlay) overlayPlay.style.display = 'none';
+
+    return true;
+  },
+
+  showModalVideoFallback() {
+    const usedYoutubeBackup = this.showYoutubeVideoFallback();
+    const fallbackElement = this.ensureModalVideoFallbackElement();
+    if (!fallbackElement) return;
+
+    if (usedYoutubeBackup) {
+      fallbackElement.style.display = 'none';
+      return;
+    }
+
+    fallbackElement.textContent = 'Video file unavailable. ';
+
+    if (this.currentWatchUrl) {
+      const watchLink = document.createElement('a');
+      watchLink.href = this.currentWatchUrl;
+      watchLink.target = '_blank';
+      watchLink.rel = 'noopener noreferrer';
+      watchLink.textContent = 'Watch the video here';
+      watchLink.style.color = '#ffe08a';
+      watchLink.style.fontWeight = '700';
+      fallbackElement.appendChild(watchLink);
+    }
+
+    fallbackElement.style.display = 'block';
+  },
+
+  configureModalVideoFallback(food) {
+    this.currentWatchUrl = this.toWatchUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+    this.currentEmbedUrl = this.toEmbedUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+
+    this.hideModalVideoFallback();
+
+    const modalVideo = document.getElementById('modalVideo');
+    const modalSource = modalVideo ? modalVideo.querySelector('source') : null;
+    if (modalVideo) {
+      modalVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+      modalVideo.onloadeddata = () => {
+        this.hideModalVideoFallback();
+      };
+    }
+
+    if (modalSource) {
+      modalSource.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    const fullscreenVideo = document.getElementById('fullscreenVideoPlayer');
+    if (fullscreenVideo) {
+      fullscreenVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    if (!(food && food.video) && (this.currentWatchUrl || this.currentEmbedUrl)) {
+      this.showModalVideoFallback();
+    }
   },
 
   renderVideoSourceLinks() {
@@ -181,12 +436,23 @@ const CuisineEngine = {
       const food = this.data.find((entry) => entry.id === id);
       if (!food || !food.sourceVideo) return;
 
+      const watchUrl = this.toWatchUrl(food.sourceVideo);
+      if (!watchUrl) return;
+
       const info = card.querySelector('.food-card-info');
       if (!info || info.querySelector('.food-video-credit')) return;
 
       const credit = document.createElement('p');
       credit.className = 'food-video-credit';
-      credit.innerHTML = `Video source: <a href="${food.sourceVideo}" target="_blank" rel="noopener noreferrer">${food.sourceVideo}</a>`;
+      credit.textContent = 'Video source: ';
+
+      const sourceLink = document.createElement('a');
+      sourceLink.href = watchUrl;
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'Watch video';
+
+      credit.appendChild(sourceLink);
       credit.addEventListener('click', (event) => {
         event.stopPropagation();
       });
@@ -270,6 +536,7 @@ const CuisineEngine = {
   openModal(id) {
     const food = this.data.find((f) => f.id === id);
     if (!food) return;
+    this.configureModalVideoFallback(food);
 
     this.currentMediaIndex = 0;
     const track = document.getElementById('mediaTrack');
@@ -285,8 +552,16 @@ const CuisineEngine = {
     document.getElementById('modalImage').src = food.image;
 
     const videoElement = document.getElementById('modalVideo');
-    videoElement.querySelector('source').src = food.video;
-    videoElement.load();
+    if (videoElement) {
+      const sourceElement = videoElement.querySelector('source');
+      if (sourceElement) {
+        sourceElement.src = food.video || '';
+      } else {
+        videoElement.src = food.video || '';
+      }
+      videoElement.load();
+      if (!food.video) this.showModalVideoFallback();
+    }
 
     document.getElementById('modalTitle').innerText = food.name;
     document.getElementById('modalOrigin').innerText = food.origin;
@@ -320,6 +595,7 @@ const CuisineEngine = {
 
   closeModal() {
     const overlay = document.getElementById('modalOverlay');
+    this.hideModalVideoFallback();
     const video = document.getElementById('modalVideo');
     const fsVideo = document.getElementById('fullscreenVideoPlayer');
 
@@ -346,7 +622,7 @@ const TouristSpots = {
       name: 'San Guillermo Parish Church',
       location: 'Bacolor, Pampanga',
       description:
-        'A historic Baroque church famously half-buried by lahar from the 1991 Mt. Pinatubo eruption. It stands as a powerful monument to Kapampangan resilience, with visitors now entering through what were once the church’s second-story windows.',
+        'A historic Baroque church famously half-buried by lahar from the 1991 Mt. Pinatubo eruption. It stands as a powerful monument to Kapampangan resilience, with visitors now entering through what were once the churchâ€™s second-story windows.',
       image: '../Pangpanga-Image/Places-1.jpg',
       time: 'Open Daily, 8:00 AM - 5:00 PM',
       highlights:

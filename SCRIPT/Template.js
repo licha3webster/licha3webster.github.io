@@ -156,6 +156,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   showPageIntro();
 
+  // Keep fullscreen/fixed overlays outside transformed sections so centering is reliable.
+  const mountOverlayToBody = (id) => {
+    const modal = document.getElementById(id);
+    if (!modal || !document.body) return;
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+  };
+
+  ['touristModal', 'officialModal', 'modalOverlay', 'videoFullscreen'].forEach(
+    mountOverlayToBody,
+  );
+
   const updateClock = () => {
     const now = new Date();
 
@@ -1107,26 +1120,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function openOfficialModal(id) {
-  const modal = document.getElementById('officialModal');
-  if (modal) {
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeOfficialModal() {
-  const modal = document.getElementById('officialModal');
-  if (modal) {
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-}
-
-window.addEventListener('click', (e) => {
-  const modal = document.getElementById('officialModal');
-  if (e.target === modal) closeOfficialModal();
-});
+// Official modal open/close handlers are provided by province-specific scripts.
 
 document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.tourist-intro-header');
@@ -1235,13 +1229,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    if (video.readyState >= 3) {
+    if (video.readyState >= 2) {
       playVideo();
     } else {
-      video.addEventListener('canplaythrough', playVideo, { once: true });
+      video.addEventListener('loadeddata', playVideo, { once: true });
+      video.addEventListener('canplay', playVideo, { once: true });
     }
-
-    video.load();
 
     const manualTrigger = () => {
       if (video.paused) playVideo();

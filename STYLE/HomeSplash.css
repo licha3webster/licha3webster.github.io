@@ -6,7 +6,7 @@
 
 @font-face {
   font-family: 'SplashBody';
-  src: url('../FONTS/exclusive_editorial/DR Exclusive Editorial.ttf')
+  src: url('../FONTS/exclusive_editorial/DR%20Exclusive%20Editorial.ttf')
     format('truetype');
   font-display: swap;
 }
@@ -30,6 +30,10 @@
   inset: 0;
   z-index: -1;
   background: #000;
+  background-image: url('../IMAGE/overview-bg.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   width: 100vw;
   height: 100vh;
 }

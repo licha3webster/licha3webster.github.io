@@ -22,10 +22,10 @@ const CuisineEngine = {
       ],
       steps: [
         'Make the flaky crust by cutting cold butter into flour until crumbly. Add cold water gradually and mix until dough forms. Chill for 30 minutes.',
-        'Sauté garlic and onions, then add diced chicken or pork. Cook until browned.',
+        'SautÃ© garlic and onions, then add diced chicken or pork. Cook until browned.',
         'Add potatoes and season with salt, pepper, and spices. Cook until potatoes are tender. Let the filling cool.',
         'Roll out the dough and cut into circles. Place filling in the center, fold over, and crimp the edges to create the scale-like pattern.',
-        'Bake at 180°C for 25–30 minutes or until golden brown.',
+        'Bake at 180Â°C for 25â€“30 minutes or until golden brown.',
       ],
     },
     {
@@ -63,7 +63,7 @@ const CuisineEngine = {
       description:
         'Famous for its extreme crunch, often packed with meat ("laman") and fat ("taba"), making it a quintessential pasalubong (souvenir).',
       image: '../Bulacan-Images/chicharon.jpg',
-      video: '../Vedio/Bulucan-Vedio/Card-4.mp4',
+      video: '../Vedio/Bulucan-Vedio/Card-3.mp4',
       sourceVideo: 'https://www.youtube.com/embed/qRwfXynYrgY?si=glovCumCrYDzJHTv',
       prep: '30 Mins',
       cook: '2 Hrs 30 Mins',
@@ -76,7 +76,7 @@ const CuisineEngine = {
       ],
       steps: [
         'Boil pork skin in salted water until tender, about 45 minutes to 1 hour.',
-        'Drain and let it dry completely — ideally sun-dry for several hours or overnight.',
+        'Drain and let it dry completely â€” ideally sun-dry for several hours or overnight.',
         'Cut into desired pieces and season with salt.',
         'Deep fry in hot oil until the skin puffs up and turns golden and extremely crunchy.',
         'Drain on paper towels and let cool before serving or packing as pasalubong.',
@@ -131,7 +131,7 @@ const CuisineEngine = {
       steps: [
         'Beat egg yolks with sugar, oil, and milk until combined. Fold in sifted cake flour.',
         'In a separate bowl, whip egg whites until stiff peaks form. Gently fold into the batter.',
-        'Pour into a lined baking pan and bake at 170°C for 25–30 minutes. Let cool completely.',
+        'Pour into a lined baking pan and bake at 170Â°C for 25â€“30 minutes. Let cool completely.',
         'Slice the chiffon cake horizontally into two thin layers.',
         'Spread custard filling generously on one layer, press the other layer on top, and cut into squares.',
       ],
@@ -164,10 +164,265 @@ const CuisineEngine = {
   ],
 
   currentMediaIndex: 0,
+  currentWatchUrl: '',
+  currentEmbedUrl: '',
 
   init() {
     this.bindEvents();
     this.renderVideoSourceLinks();
+  },
+
+  toWatchUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId) return `https://www.youtube.com/watch?v=${shortId}`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (embedId) return `https://www.youtube.com/watch?v=${embedId}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (watchId) return `https://www.youtube.com/watch?v=${watchId}`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const listType = parsedUrl.searchParams.get('listType');
+          const listValue = parsedUrl.searchParams.get('list');
+          if (listType === 'search' && listValue) {
+            return `https://www.youtube.com/results?search_query=${encodeURIComponent(listValue)}`;
+          }
+        }
+      }
+
+      return sourceVideo;
+    } catch (error) {
+      return sourceVideo;
+    }
+  },
+
+  toEmbedUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId)
+          return `https://www.youtube.com/embed/${shortId}?autoplay=1&rel=0`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (!embedId) return '';
+
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed/${embedId}?${params.toString()}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (!watchId) return '';
+          return `https://www.youtube.com/embed/${watchId}?autoplay=1&rel=0`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed?${params.toString()}`;
+        }
+      }
+
+      return '';
+    } catch (error) {
+      return '';
+    }
+  },
+
+  ensureModalVideoFallbackElement() {
+    let fallbackElement = document.getElementById('modalVideoFallback');
+    if (fallbackElement) return fallbackElement;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    const container = trigger ? trigger.parentElement : null;
+    if (!container) return null;
+
+    fallbackElement = document.createElement('p');
+    fallbackElement.id = 'modalVideoFallback';
+    fallbackElement.className = 'modal-video-fallback';
+    fallbackElement.style.display = 'none';
+    fallbackElement.style.marginTop = '0.75rem';
+    fallbackElement.style.textAlign = 'center';
+    fallbackElement.style.fontSize = '0.9rem';
+    fallbackElement.style.fontWeight = '600';
+    fallbackElement.style.color = '#ffffff';
+    fallbackElement.style.padding = '0 0.5rem';
+
+    container.appendChild(fallbackElement);
+    return fallbackElement;
+  },
+
+  ensureYoutubeFallbackFrame() {
+    let youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    if (youtubeFrame) return youtubeFrame;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    if (!trigger) return null;
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'modalVideoYoutubeWrapper';
+    wrapper.style.display = 'none';
+    wrapper.style.width = '100%';
+    wrapper.style.height = '100%';
+    wrapper.style.position = 'absolute';
+    wrapper.style.inset = '0';
+    wrapper.style.borderRadius = '12px';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.backgroundColor = '#000';
+    wrapper.style.zIndex = '3';
+
+    youtubeFrame = document.createElement('iframe');
+    youtubeFrame.id = 'modalVideoYoutubeFrame';
+    youtubeFrame.title = 'YouTube backup video';
+    youtubeFrame.style.width = '100%';
+    youtubeFrame.style.height = '100%';
+    youtubeFrame.style.border = '0';
+    youtubeFrame.allow =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    youtubeFrame.allowFullscreen = true;
+    youtubeFrame.referrerPolicy = 'strict-origin-when-cross-origin';
+
+    wrapper.appendChild(youtubeFrame);
+    trigger.appendChild(wrapper);
+
+    return youtubeFrame;
+  },
+
+  hideYoutubeVideoFallback() {
+    const youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (youtubeFrame) youtubeFrame.src = '';
+    if (youtubeWrapper) youtubeWrapper.style.display = 'none';
+    if (modalVideo) modalVideo.style.display = '';
+    if (overlayPlay) overlayPlay.style.display = '';
+  },
+
+  hideModalVideoFallback() {
+    const fallbackElement = document.getElementById('modalVideoFallback');
+    this.hideYoutubeVideoFallback();
+
+    if (!fallbackElement) return;
+    fallbackElement.style.display = 'none';
+    fallbackElement.textContent = '';
+  },
+
+  showYoutubeVideoFallback() {
+    if (!this.currentEmbedUrl) return false;
+
+    const youtubeFrame = this.ensureYoutubeFallbackFrame();
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (!youtubeFrame || !youtubeWrapper || !modalVideo) return false;
+
+    youtubeFrame.src = this.currentEmbedUrl;
+    youtubeWrapper.style.display = 'block';
+    modalVideo.style.display = 'none';
+    if (overlayPlay) overlayPlay.style.display = 'none';
+
+    return true;
+  },
+
+  showModalVideoFallback() {
+    const usedYoutubeBackup = this.showYoutubeVideoFallback();
+    const fallbackElement = this.ensureModalVideoFallbackElement();
+    if (!fallbackElement) return;
+
+    if (usedYoutubeBackup) {
+      fallbackElement.style.display = 'none';
+      return;
+    }
+
+    fallbackElement.textContent = 'Video file unavailable. ';
+
+    if (this.currentWatchUrl) {
+      const watchLink = document.createElement('a');
+      watchLink.href = this.currentWatchUrl;
+      watchLink.target = '_blank';
+      watchLink.rel = 'noopener noreferrer';
+      watchLink.textContent = 'Watch the video here';
+      watchLink.style.color = '#ffe08a';
+      watchLink.style.fontWeight = '700';
+      fallbackElement.appendChild(watchLink);
+    }
+
+    fallbackElement.style.display = 'block';
+  },
+
+  configureModalVideoFallback(food) {
+    this.currentWatchUrl = this.toWatchUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+    this.currentEmbedUrl = this.toEmbedUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+
+    this.hideModalVideoFallback();
+
+    const modalVideo = document.getElementById('modalVideo');
+    const modalSource = modalVideo ? modalVideo.querySelector('source') : null;
+    if (modalVideo) {
+      modalVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+      modalVideo.onloadeddata = () => {
+        this.hideModalVideoFallback();
+      };
+    }
+
+    if (modalSource) {
+      modalSource.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    const fullscreenVideo = document.getElementById('fullscreenVideoPlayer');
+    if (fullscreenVideo) {
+      fullscreenVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    if (!(food && food.video) && (this.currentWatchUrl || this.currentEmbedUrl)) {
+      this.showModalVideoFallback();
+    }
   },
 
   renderVideoSourceLinks() {
@@ -176,12 +431,23 @@ const CuisineEngine = {
       const food = this.data.find((entry) => entry.id === id);
       if (!food || !food.sourceVideo) return;
 
+      const watchUrl = this.toWatchUrl(food.sourceVideo);
+      if (!watchUrl) return;
+
       const info = card.querySelector('.food-card-info');
       if (!info || info.querySelector('.food-video-credit')) return;
 
       const credit = document.createElement('p');
       credit.className = 'food-video-credit';
-      credit.innerHTML = `Video source: <a href="${food.sourceVideo}" target="_blank" rel="noopener noreferrer">${food.sourceVideo}</a>`;
+      credit.textContent = 'Video source: ';
+
+      const sourceLink = document.createElement('a');
+      sourceLink.href = watchUrl;
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'Watch video';
+
+      credit.appendChild(sourceLink);
       credit.addEventListener('click', (event) => {
         event.stopPropagation();
       });
@@ -264,6 +530,7 @@ const CuisineEngine = {
   openModal(id) {
     const food = this.data.find((f) => f.id === id);
     if (!food) return;
+    this.configureModalVideoFallback(food);
 
     this.currentMediaIndex = 0;
     document.getElementById('mediaTrack').style.transform = 'translateX(0%)';
@@ -275,10 +542,26 @@ const CuisineEngine = {
 
     const vPlayer = document.getElementById('modalVideo');
     const fPlayer = document.getElementById('fullscreenVideoPlayer');
-    vPlayer.src = food.video;
-    fPlayer.src = food.video;
-    vPlayer.load();
-    fPlayer.load();
+
+    if (vPlayer) {
+      if (food.video) {
+        vPlayer.src = food.video;
+      } else {
+        vPlayer.removeAttribute('src');
+      }
+      vPlayer.load();
+    }
+
+    if (fPlayer) {
+      if (food.video) {
+        fPlayer.src = food.video;
+      } else {
+        fPlayer.removeAttribute('src');
+      }
+      fPlayer.load();
+    }
+
+    if (!food.video) this.showModalVideoFallback();
 
     document.getElementById('modalTitle').innerText = food.name;
     document.getElementById('modalOrigin').innerText = food.origin;
@@ -312,6 +595,7 @@ const CuisineEngine = {
 
   closeModal() {
     const overlay = document.getElementById('modalOverlay');
+    this.hideModalVideoFallback();
     document.getElementById('modalVideo').pause();
     document.getElementById('fullscreenVideoPlayer').pause();
     overlay.classList.remove('active');
@@ -480,15 +764,15 @@ const OfficialData = {
     1: {
       name: 'Hon. Daniel Fernando',
       position: 'Governor of Bulacan',
-      image: '../Bulacan-Images/alexis.png',
-      bio: 'Serves as the Governor of Bulacan, leading the province toward sustainable development, infrastructure growth, and improved public services for all Bulaceños.',
+      image: '../Bulacan-Images/daniel.png',
+      bio: 'Serves as the Governor of Bulacan, leading the province toward sustainable development, infrastructure growth, and improved public services for all BulaceÃ±os.',
       fb: '#',
       xt: '#',
     },
     2: {
       name: 'Hon. Alexis C. Castro',
       position: 'Vice Governor of Bulacan',
-      image: '../Bulacan-Images/daniel.png',
+      image: '../Bulacan-Images/alexis.png',
       bio: 'Presides over the Sangguniang Panlalawigan of Bulacan and supports key legislative measures aimed at provincial progress and community welfare.',
       fb: '#',
       xt: '#',
@@ -550,13 +834,21 @@ const OfficialData = {
     const modal = document.getElementById('officialModal');
     const scrollArea = modal.querySelector('.o-thetraingoesbrrr-scroll-area');
     const img = document.getElementById('o-thetraingoesbrrr-img');
+    const cardImage = document.querySelector(
+      `.official-card[onclick="openOfficialModal(${id})"] img`,
+    );
     const name = document.getElementById('o-thetraingoesbrrr-name');
     const pos = document.getElementById('o-thetraingoesbrrr-position');
     const bio = document.getElementById('o-thetraingoesbrrr-bio');
     const fbLink = modal.querySelector('.social-icon.fb');
     const xtLink = modal.querySelector('.social-icon.x-twitter');
 
-    img.src = leader.image;
+    img.onerror = () => {
+      if (!cardImage) return;
+      img.onerror = null;
+      img.src = cardImage.getAttribute('src') || '';
+    };
+    img.src = leader.image || (cardImage ? cardImage.getAttribute('src') : '');
     img.alt = leader.name;
     name.textContent = leader.name;
     pos.textContent = leader.position;

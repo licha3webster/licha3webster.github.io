@@ -7,7 +7,7 @@ const CuisineEngine = {
       description:
         'The pride of Morong. A heavy, creamy, and authentic Filipino pie filled with tender young coconut meat.',
       image: '../IMAGE/Foods-1.webp',
-      video: '../Vedio/Bataan-Vedio/Card-3.mp4',
+      video: '../Vedio/Bataan-Vedio/Card-1.mp4',
       sourceVideo: 'https://www.youtube.com/embed/gQgLYGmH4wU',
       prep: '30 Mins',
       cook: '45 Mins',
@@ -24,7 +24,7 @@ const CuisineEngine = {
         'In a pan, mix condensed milk and cornstarch over medium heat until thick.',
         'Fold in the fresh buko meat and let the mixture cool completely.',
         'Roll out the dough, add filling, and cover with a top crust.',
-        'Bake at 175°C (350°F) for 45 minutes until the crust is golden brown.',
+        'Bake at 175Â°C (350Â°F) for 45 minutes until the crust is golden brown.',
       ],
     },
     {
@@ -34,7 +34,7 @@ const CuisineEngine = {
       description:
         'Traditional smoked fish known for its deep golden color and distinct aromatic flavor from coconut husks.',
       image: '../IMAGE/Food-2.jpg',
-      video: '../Vedio/Bataan-Vedio/Card-4.mp4',
+      video: '../Vedio/Bataan-Vedio/Card-2.mp4',
       sourceVideo: 'https://www.youtube.com/embed/Cg-ZPesUBmk',
       prep: '2 Hours',
       cook: '3 Hours',
@@ -123,7 +123,7 @@ const CuisineEngine = {
       ],
       steps: [
         'Soak snails in water for 4 hours, then snip the tips of the shells.',
-        'Sauté garlic, onions, and ginger. Add snails and stir-fry.',
+        'SautÃ© garlic, onions, and ginger. Add snails and stir-fry.',
         'Pour in coconut cream and simmer until the sauce thickens.',
         'Add chilies and kangkong leaves, cook for 2 more minutes.',
       ],
@@ -151,10 +151,265 @@ const CuisineEngine = {
   ],
 
   currentMediaIndex: 0,
+  currentWatchUrl: '',
+  currentEmbedUrl: '',
 
   init() {
     this.bindEvents();
     this.renderVideoSourceLinks();
+  },
+
+  toWatchUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId) return `https://www.youtube.com/watch?v=${shortId}`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (embedId) return `https://www.youtube.com/watch?v=${embedId}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (watchId) return `https://www.youtube.com/watch?v=${watchId}`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const listType = parsedUrl.searchParams.get('listType');
+          const listValue = parsedUrl.searchParams.get('list');
+          if (listType === 'search' && listValue) {
+            return `https://www.youtube.com/results?search_query=${encodeURIComponent(listValue)}`;
+          }
+        }
+      }
+
+      return sourceVideo;
+    } catch (error) {
+      return sourceVideo;
+    }
+  },
+
+  toEmbedUrl(sourceVideo) {
+    if (!sourceVideo) return '';
+
+    try {
+      const parsedUrl = new URL(sourceVideo);
+      const host = parsedUrl.hostname.replace(/^www\./, '');
+
+      if (host === 'youtu.be') {
+        const shortId = parsedUrl.pathname.replace('/', '').trim();
+        if (shortId)
+          return `https://www.youtube.com/embed/${shortId}?autoplay=1&rel=0`;
+      }
+
+      if (
+        host === 'youtube.com' ||
+        host === 'm.youtube.com' ||
+        host === 'youtube-nocookie.com'
+      ) {
+        if (parsedUrl.pathname.startsWith('/embed/')) {
+          const embedId = parsedUrl.pathname.split('/')[2];
+          if (!embedId) return '';
+
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed/${embedId}?${params.toString()}`;
+        }
+
+        if (parsedUrl.pathname === '/watch') {
+          const watchId = parsedUrl.searchParams.get('v');
+          if (!watchId) return '';
+          return `https://www.youtube.com/embed/${watchId}?autoplay=1&rel=0`;
+        }
+
+        if (parsedUrl.pathname === '/embed') {
+          const params = new URLSearchParams(parsedUrl.search);
+          params.set('autoplay', '1');
+          params.set('rel', '0');
+          return `https://www.youtube.com/embed?${params.toString()}`;
+        }
+      }
+
+      return '';
+    } catch (error) {
+      return '';
+    }
+  },
+
+  ensureModalVideoFallbackElement() {
+    let fallbackElement = document.getElementById('modalVideoFallback');
+    if (fallbackElement) return fallbackElement;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    const container = trigger ? trigger.parentElement : null;
+    if (!container) return null;
+
+    fallbackElement = document.createElement('p');
+    fallbackElement.id = 'modalVideoFallback';
+    fallbackElement.className = 'modal-video-fallback';
+    fallbackElement.style.display = 'none';
+    fallbackElement.style.marginTop = '0.75rem';
+    fallbackElement.style.textAlign = 'center';
+    fallbackElement.style.fontSize = '0.9rem';
+    fallbackElement.style.fontWeight = '600';
+    fallbackElement.style.color = '#ffffff';
+    fallbackElement.style.padding = '0 0.5rem';
+
+    container.appendChild(fallbackElement);
+    return fallbackElement;
+  },
+
+  ensureYoutubeFallbackFrame() {
+    let youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    if (youtubeFrame) return youtubeFrame;
+
+    const trigger = document.querySelector('.video-lightbox-trigger');
+    if (!trigger) return null;
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'modalVideoYoutubeWrapper';
+    wrapper.style.display = 'none';
+    wrapper.style.width = '100%';
+    wrapper.style.height = '100%';
+    wrapper.style.position = 'absolute';
+    wrapper.style.inset = '0';
+    wrapper.style.borderRadius = '12px';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.backgroundColor = '#000';
+    wrapper.style.zIndex = '3';
+
+    youtubeFrame = document.createElement('iframe');
+    youtubeFrame.id = 'modalVideoYoutubeFrame';
+    youtubeFrame.title = 'YouTube backup video';
+    youtubeFrame.style.width = '100%';
+    youtubeFrame.style.height = '100%';
+    youtubeFrame.style.border = '0';
+    youtubeFrame.allow =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    youtubeFrame.allowFullscreen = true;
+    youtubeFrame.referrerPolicy = 'strict-origin-when-cross-origin';
+
+    wrapper.appendChild(youtubeFrame);
+    trigger.appendChild(wrapper);
+
+    return youtubeFrame;
+  },
+
+  hideYoutubeVideoFallback() {
+    const youtubeFrame = document.getElementById('modalVideoYoutubeFrame');
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (youtubeFrame) youtubeFrame.src = '';
+    if (youtubeWrapper) youtubeWrapper.style.display = 'none';
+    if (modalVideo) modalVideo.style.display = '';
+    if (overlayPlay) overlayPlay.style.display = '';
+  },
+
+  hideModalVideoFallback() {
+    const fallbackElement = document.getElementById('modalVideoFallback');
+    this.hideYoutubeVideoFallback();
+
+    if (!fallbackElement) return;
+    fallbackElement.style.display = 'none';
+    fallbackElement.textContent = '';
+  },
+
+  showYoutubeVideoFallback() {
+    if (!this.currentEmbedUrl) return false;
+
+    const youtubeFrame = this.ensureYoutubeFallbackFrame();
+    const youtubeWrapper = document.getElementById('modalVideoYoutubeWrapper');
+    const modalVideo = document.getElementById('modalVideo');
+    const overlayPlay = document.querySelector('.video-overlay-play');
+
+    if (!youtubeFrame || !youtubeWrapper || !modalVideo) return false;
+
+    youtubeFrame.src = this.currentEmbedUrl;
+    youtubeWrapper.style.display = 'block';
+    modalVideo.style.display = 'none';
+    if (overlayPlay) overlayPlay.style.display = 'none';
+
+    return true;
+  },
+
+  showModalVideoFallback() {
+    const usedYoutubeBackup = this.showYoutubeVideoFallback();
+    const fallbackElement = this.ensureModalVideoFallbackElement();
+    if (!fallbackElement) return;
+
+    if (usedYoutubeBackup) {
+      fallbackElement.style.display = 'none';
+      return;
+    }
+
+    fallbackElement.textContent = 'Video file unavailable. ';
+
+    if (this.currentWatchUrl) {
+      const watchLink = document.createElement('a');
+      watchLink.href = this.currentWatchUrl;
+      watchLink.target = '_blank';
+      watchLink.rel = 'noopener noreferrer';
+      watchLink.textContent = 'Watch the video here';
+      watchLink.style.color = '#ffe08a';
+      watchLink.style.fontWeight = '700';
+      fallbackElement.appendChild(watchLink);
+    }
+
+    fallbackElement.style.display = 'block';
+  },
+
+  configureModalVideoFallback(food) {
+    this.currentWatchUrl = this.toWatchUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+    this.currentEmbedUrl = this.toEmbedUrl(
+      food && food.sourceVideo ? food.sourceVideo : '',
+    );
+
+    this.hideModalVideoFallback();
+
+    const modalVideo = document.getElementById('modalVideo');
+    const modalSource = modalVideo ? modalVideo.querySelector('source') : null;
+    if (modalVideo) {
+      modalVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+      modalVideo.onloadeddata = () => {
+        this.hideModalVideoFallback();
+      };
+    }
+
+    if (modalSource) {
+      modalSource.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    const fullscreenVideo = document.getElementById('fullscreenVideoPlayer');
+    if (fullscreenVideo) {
+      fullscreenVideo.onerror = () => {
+        this.showModalVideoFallback();
+      };
+    }
+
+    if (!(food && food.video) && (this.currentWatchUrl || this.currentEmbedUrl)) {
+      this.showModalVideoFallback();
+    }
   },
 
   renderVideoSourceLinks() {
@@ -163,12 +418,23 @@ const CuisineEngine = {
       const food = this.data.find((entry) => entry.id === id);
       if (!food || !food.sourceVideo) return;
 
+      const watchUrl = this.toWatchUrl(food.sourceVideo);
+      if (!watchUrl) return;
+
       const info = card.querySelector('.food-card-info');
       if (!info || info.querySelector('.food-video-credit')) return;
 
       const credit = document.createElement('p');
       credit.className = 'food-video-credit';
-      credit.innerHTML = `Video source: <a href="${food.sourceVideo}" target="_blank" rel="noopener noreferrer">${food.sourceVideo}</a>`;
+      credit.textContent = 'Video source: ';
+
+      const sourceLink = document.createElement('a');
+      sourceLink.href = watchUrl;
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'Watch video';
+
+      credit.appendChild(sourceLink);
       credit.addEventListener('click', (event) => {
         event.stopPropagation();
       });
@@ -253,6 +519,7 @@ const CuisineEngine = {
   openModal(id) {
     const food = this.data.find((f) => f.id === id);
     if (!food) return;
+    this.configureModalVideoFallback(food);
 
     this.currentMediaIndex = 0;
     const track = document.getElementById('mediaTrack');
@@ -268,8 +535,16 @@ const CuisineEngine = {
     document.getElementById('modalImage').src = food.image;
 
     const videoPlayer = document.getElementById('modalVideo');
-    videoPlayer.src = food.video;
-    videoPlayer.load();
+    if (videoPlayer) {
+      if (food.video) {
+        videoPlayer.src = food.video;
+        videoPlayer.load();
+      } else {
+        videoPlayer.removeAttribute('src');
+        videoPlayer.load();
+        this.showModalVideoFallback();
+      }
+    }
 
     document.getElementById('modalTitle').innerText = food.name;
     document.getElementById('modalOrigin').innerText = food.origin;
@@ -303,6 +578,7 @@ const CuisineEngine = {
 
   closeModal() {
     const overlay = document.getElementById('modalOverlay');
+    this.hideModalVideoFallback();
     const video = document.getElementById('modalVideo');
     const fsVideo = document.getElementById('fullscreenVideoPlayer');
 
@@ -503,7 +779,7 @@ const OfficialData = {
       name: 'Hon. Mylene A. Serrano',
       position: '3rd District Board Member',
       image: '../Bataan-Image/3rd board-1.jpg',
-      bio: 'Hon. Mylene A. Serrano is a staunch advocate for women’s rights, healthcare accessibility, and youth empowerment. Her initiatives aim to provide better social safety nets and educational support systems within the third district.',
+      bio: 'Hon. Mylene A. Serrano is a staunch advocate for womenâ€™s rights, healthcare accessibility, and youth empowerment. Her initiatives aim to provide better social safety nets and educational support systems within the third district.',
       fb: '#',
       xt: '#',
     },
