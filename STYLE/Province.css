@@ -2770,9 +2770,19 @@ body.nav-locked {
   padding: 120px 20px;
   background-color: white;
 }
+.officials-pyramid-aurora-section {
+  padding: 120px 20px;
+  background-image: url(../Aurura-Image/Logo-municipality.jpg);
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
 .officials-pyramid-bulacan-section {
   padding: 120px 20px;
-  background-image: url(../Bulacan-Images/logo-bulacan.png);
+  background-image: url(../Bulacan-Images/bulacann.jpg);
   background-size: 60%;
   background-repeat: no-repeat;
   background-position: center;
@@ -2781,7 +2791,47 @@ body.nav-locked {
 }
 .officials-pyramid-bataan-section {
   padding: 120px 20px;
-  background-image: url(../Bulacan-Images/logo-bataan.png);
+  background-image: url(../Bataan-Image/Logo-municipality.png);
+  background-size: 45%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
+.officials-pyramid-Nuevaecija-section {
+  padding: 120px 20px;
+  background-image: url(../nueva-ecija-image/Logo-municipality.png);
+  background-size: 45%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
+.officials-pyramid-Pampanga-section {
+  padding: 120px 20px;
+  background-image: url(../Pangpanga-Image/Logo-municipality.png);
+  background-size: 45%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
+.officials-pyramid-tarlac-section {
+  padding: 120px 20px;
+  background-image: url(../Tarlac-image/Goverment-logo.png);
+  background-size: 45%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
+.officials-pyramid-Zambales-section {
+  padding: 120px 20px;
+  background-image: url(../Zambales-Image/Logo-Municipality.png);
   background-size: 45%;
   background-repeat: no-repeat;
   background-position: center;
@@ -3166,12 +3216,19 @@ body.nav-locked {
 
 .festival-intro-section-title {
   font-family: var(--font-brand);
+
   color: white;
+
   font-size: clamp(2.3rem, 6.2vw, 4.8rem);
+
   font-weight: 900;
+
   line-height: 1.05;
+
   letter-spacing: -1px;
+
   margin-bottom: 20px;
+
   text-wrap: balance;
 }
 
@@ -5095,21 +5152,16 @@ img {
 .festival-intro-header.is-visible .festival-intro-tag {
   transition-delay: 0.1s;
 }
+
 .festival-intro-header.is-visible .fest-introduction {
   transition-delay: 0.5s;
 }
+
 .festival-intro-header.is-visible .festival-intro-scroll-hint {
   transition-delay: 0.7s;
 }
 
-.festival-intro-section-title {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.1em;
-}
-
 .letter {
-  display: inline-block;
   opacity: 0;
   transform: translateY(20px) rotateX(-90deg);
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -5118,6 +5170,26 @@ img {
 .letter.active {
   opacity: 1;
   transform: translateY(0) rotateX(0);
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.festival-intro-scroll-hint {
+  animation: bounce 2.5s infinite;
 }
 
 /* Animation for Festival section ayaw ko na pagod na ako */
@@ -5772,7 +5844,9 @@ img {
   opacity: 0;
   visibility: hidden;
   z-index: 9999;
-  transition: opacity 0.35s ease, visibility 0.35s ease;
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease;
 }
 
 #officialModal.o-thetraingoesbrrr-overlay.active {
